@@ -9,48 +9,26 @@ def download_data_from_link(link):
 
 # Function to process the downloaded data and convert it into a DataFrame
 def process_data(data):
+    pokemons = data["pokemon"]
+
     # Extract the required attributes from the data
-    pokemon_list = data["pokemon"]
-
-    # Initialize empty lists to store the attributes
-    ids = []
-    nums = []
-    names = []
-    imgs = []
-    types = []
-    heights = []
-    weights = []
-    candies = []
-    candy_counts = []
-    eggs = []
-    spawn_chances = []
-    avg_spawns = []
-    spawn_times = []
-    multipliers = []
-    weaknesses = []
-    next_evolutions = []
-    prev_evolutions = []
-
-    # Iterate over each Pokemon in the list and extract the attributes
-    for pokemon in pokemon_list:
-        ids.append(pokemon.get("id"))
-        nums.append(pokemon.get("num"))
-        names.append(pokemon.get("name"))
-        imgs.append(pokemon.get("img"))
-        types.append(pokemon.get("type"))
-        heights.append(pokemon.get("height"))
-        weights.append(pokemon.get("weight"))
-        candies.append(pokemon.get("candy"))
-        candy_counts.append(pokemon.get("candy_count"))
-        eggs.append(pokemon.get("egg"))
-        spawn_chances.append(pokemon.get("spawn_chance"))
-        avg_spawns.append(pokemon.get("avg_spawns"))
-        spawn_times.append(pokemon.get("spawn_time"))
-        multipliers.append(pokemon.get("multipliers"))
-        weaknesses.append(pokemon.get("weaknesses"))
-        next_evolutions.append(pokemon.get("next_evolution"))
-        prev_evolutions.append(pokemon.get("prev_evolution", []))  # We need to use empty list as default value if key is missing
-
+    ids = [int(pokemon.get("id")) for pokemon in pokemons]
+    nums = [int(pokemon.get("num")) for pokemon in pokemons]
+    names = [pokemon["name"] for pokemon in pokemons]
+    imgs = [pokemon["img"] for pokemon in pokemons]
+    types = [pokemon["type"] for pokemon in pokemons]
+    heights = [float(pokemon.get("height")) for pokemon in pokemons]
+    weights = [float(pokemon.get("weight")) for pokemon in pokemons]
+    candies = [pokemon.get("candy") for pokemon in pokemons]
+    candy_counts = [int(pokemon.get("candy_count")) for pokemon in pokemons]
+    eggs = [float(pokemon.get("egg", 0)) for pokemon in pokemons]
+    spawn_chances = [float(pokemon.get("spawn_chance", 0)) for pokemon in pokemons]
+    avg_spawns = [int(pokemon.get("avg_spawns", 0)) for pokemon in pokemons]
+    spawn_times = [pokemon.get("spawn_time") for pokemon in pokemons]
+    multipliers = [list(map(float, pokemon.get("multipliers", []))) for pokemon in pokemons]
+    weaknesses = [pokemon.get("weaknesses") for pokemon in pokemons]
+    next_evolutions = [pokemon.get("next_evolution", []) for pokemon in pokemons]
+    prev_evolutions = [pokemon.get("prev_evolution", []) for pokemon in pokemons]
     # Create a dictionary with the extracted attributes
     pokemon_data = {
         "id": ids,
