@@ -1,7 +1,5 @@
-import datetime
 import requests
 import pandas as pd
-import math
 import logging
 
 logging.basicConfig(filename="pokemon.log",level=logging.INFO, format='%(levelname)s %(asctime)s %(name)s %(message)s')
@@ -20,185 +18,179 @@ def download_data_from_link(link):
 
 def process_data(data):
     """Function to process the downloaded data and convert it into a DataFrame"""
-    pokemons = data["pokemon"]
+    pokemons = data.get("pokemon")
+
+    # Define empty lists to store the data.
+    ids_list = []
+    nums_list = []
+    names_list = []
+    imgs_list = []
+    types_list = []
+    height_list = []
+    weight_list = []
+    candy_list = []
+    candy_count_list = []
+    eggs_list = []
+    spawn_chances_list = []
+    avg_spawns_list = []
+    spawn_time_list = []
+    multipliers_list = []
+    weaknesses_list = []
+    next_evolutions_list = []
+    prev_evolutions_list = []
+
 
     logging.info("Extract the required attributes from the data")
-    ids_list = []
     logging.info("We are fetching the ids from the pokemon.")
     for pokemon in pokemons:
         ids = pokemon.get("id")
         try:
-            if isinstance(ids,str):
-                ids_list.append(ids)
+            if pd.notnull(ids):
+                ids_list.append(int(ids))
             else:
-                ids_list.append(0)
+                ids_list.append(None)
         except Exception as e:
                 logging.exception(e)
 
 
-    nums_list = []
-    logging.info("We are fetching the numbers from the pokemon")
+    logging.info("We are fetching the nums from the pokemon.")
     for pokemon in pokemons:
         nums = pokemon.get("num")
         try:
-            if isinstance(nums,str):
-                nums_list.append(nums)
+            if pd.notnull(nums):
+                nums_list.append(int(nums))
             else:
-                nums_list.append(0)
+                nums_list.append(None)
         except Exception as e:
             logging.exception(e)
 
-
-    names_list = []
-    logging.info("We are fetching the names from the pokemon")
+    logging.info("We are fetching the names from the pokemon.")
     for pokemon in pokemons:
         names = pokemon.get("name")
         try:
-            if isinstance(names,str):
+            if isinstance(names, str):
                 names_list.append(names)
             else:
-                names_list.append("No name")
+                names_list.append("")
         except Exception as e:
-                logging.exception(e)
+            logging.exception(e)
 
-    imgs_list = []
-    logging.info("We are fetching the images from the pokemon")
+    logging.info("We are fetching the imgs from the pokemon.")
     for pokemon in pokemons:
         imgs = pokemon.get("img")
         try:
-            if isinstance(imgs,str):
+            if isinstance(imgs, str):
                 imgs_list.append(imgs)
             else:
-                imgs_list.append("No url")
+                imgs_list.append("")
         except Exception as e:
-                logging.exception(e)
+            logging.exception(e)
 
-    types_list = []
-    logging.info("We are fetching the types from the pokemon")
+    logging.info("We are fetching the types from the pokemon.")
     for pokemon in pokemons:
         types = pokemon.get("type")
         try:
-            if isinstance(types,str):
+            if isinstance(types, str):
                 types_list.append(types)
             else:
-                types_list.append("No type")
+                types_list.append("")
         except Exception as e:
             logging.exception(e)
 
-
-    heights_list = []
-    logging.info("We are fetching the heights from the pokemon")
+    logging.info("We are fetching the heights from the pokemon.")
     for pokemon in pokemons:
         heights = pokemon.get("height")
         try:
-            if isinstance(heights,str):
-                heights_list.append(float(heights.replace(" ", "").rstrip('m')))
+            if pd.notnull(heights):
+                heights = heights.replace(" ", "").rstrip("m")
+                height_list.append(float(heights))
             else:
-                heights_list.append(0.0)
+                height_list.append(None)
         except Exception as e:
-                logging.exception(e)
+            logging.exception(e)
 
-
-    weights_list = []
-    logging.info("We are fetching the weights from the pokemon")
+    logging.info("We are fetching the weights from the pokemon.")
     for pokemon in pokemons:
         weights = pokemon.get("weight")
         try:
-            if isinstance(weights,str):
-                weights_list.append(float(weights.replace(" ","").rstrip('kg')))
+            if pd.notnull(weights):
+                weights = weights.replace(" ", "").rstrip("kg")
+                weight_list.append(float(weights))
             else:
-                weights_list.append(0.0)
+                weight_list.append(None)
         except Exception as e:
             logging.exception(e)
 
-
-    candies_list = []
-    logging.info("We are fetching the candies from the pokemon")
+    logging.info("We are fetching the candy from the pokemon.")
     for pokemon in pokemons:
-        candies = pokemon.get("candy")
+        candy = pokemon.get("candy")
         try:
-            if isinstance(candies,str):
-                candies_list.append(candies)
+            if isinstance(candy, str):
+                candy_list.append(candy)
             else:
-                candies_list.append("No candy")
+                candy_list.append("")
         except Exception as e:
             logging.exception(e)
 
-
-    candy_counts_list = []
-    logging.info("We are fetching the candy_counts from the pokemon")
+    logging.info("We are fetching the candy_count from the pokemon.")
     for pokemon in pokemons:
-        candy_counts = pokemon.get("candy_count")
+        candy_count = pokemon.get("candy_count")
         try:
-            if candy_counts is not None and not math.isnan(candy_counts):
-                candy_counts_list.append(int(candy_counts))
+            if pd.notnull(candy_count):
+                candy_count_list.append(int(candy_count))
             else:
-                candy_counts_list.append(0)
+                candy_count_list.append(None)
         except Exception as e:
             logging.exception(e)
 
-    eggs_list = []
-    logging.info("We are fetching the eggs from the pokemon")
+    logging.info("We are fetching the eggs from the pokemon.")
     for pokemon in pokemons:
         eggs = pokemon.get("egg")
         try:
-            if isinstance(eggs, str) and eggs != 'NotinEggs':
-                eggs_list.append(float(eggs.replace(" ", "").rstrip('km')))
+            if "km" in eggs:
+                eggs = eggs.replace(" ", "").rstrip("km")
+                eggs_list.append(int(float(eggs)))
             else:
                 eggs_list.append(None)
-        except ValueError:
-            eggs_list.append(None)  # Handle the specific ValueError for non-convertible values
         except Exception as e:
             logging.exception(e)
 
-    spawn_chances_list = []
-    logging.info("We are fetching the spawn_chances from the pokemon")
+    logging.info("We are fetching the spawn_chances from the pokemon.")
     for pokemon in pokemons:
         spawn_chances = pokemon.get("spawn_chance")
         try:
-            if isinstance(spawn_chances,str):
+            if pd.notnull(spawn_chances):
                 spawn_chances_list.append(float(spawn_chances))
             else:
-                spawn_chances_list.append(0.0)
+                spawn_chances_list.append(None)
         except Exception as e:
             logging.exception(e)
 
-    avg_spawns_list = []
-    logging.info("We are fetching the avg_spawns from the pokemon")
+    logging.info("We are fetching the avg_spawns from the pokemon.")
     for pokemon in pokemons:
         avg_spawns = pokemon.get("avg_spawns")
         try:
-            if isinstance(avg_spawns,str):
+            if pd.notnull(avg_spawns):
                 avg_spawns_list.append(int(avg_spawns))
             else:
-                avg_spawns_list.append(0)
+                avg_spawns_list.append(None)
         except Exception as e:
             logging.exception(e)
 
-
-    spawn_times_list = []
-    logging.info("We are fetching the spawn_times from the pokemon")
+    logging.info("We are fetching the spawn_time from the pokemon.")
     for pokemon in pokemons:
-        spawn_times = pokemon.get("spawn_times")
+        spawn_time = pokemon.get("spawn_time")
+        spawn_time = spawn_time.replace(" ", "")
         try:
-            if spawn_times is not None:
-                if isinstance(spawn_times, float):
-                    spawn_times = str(spawn_times)
-                    spawn_times = datetime.datetime.strptime(spawn_times,"%M:%S").time()  # converting spawn_times to time format.
-                    spawn_times_list.append(spawn_times)
-                elif spawn_times == "nan":
-                     spawn_times = "00:00"
-                     spawn_times = datetime.datetime.strptime(spawn_times,"%M:%S").time()
-                     spawn_times_list.append(spawn_times)
-                else:
-                    spawn_times = datetime.datetime.strptime(spawn_times, "%M:%S").time()
-                    spawn_times_list.append(spawn_times)
+            if spawn_time == "N/A":
+                spawn_time_list.append(pd.to_datetime("00:00").time())
+            else:
+                spawn_time_list.append(pd.to_datetime(spawn_time).time())
         except Exception as e:
             logging.exception(e)
 
 
-    multipliers_list = []
-    logging.info("We are fetching the multipliers from the pokemon")
+    logging.info("We are fetching the multipliers from the pokemon.")
     for pokemon in pokemons:
         multipliers = pokemon.get("multipliers")
         try:
@@ -209,72 +201,64 @@ def process_data(data):
                         ele_str = str(ele).strip("[]")
                         m_list.append(int(float(ele_str)))
                     multipliers_list.append(m_list)
-                elif isinstance(multipliers,str):
+                elif isinstance(multipliers, str):
                     ele_str = multipliers.strip("[]")
                     m_list.append(int(float(ele_str)))
                     multipliers_list.append(m_list)
-                else:
-                    multipliers_list.append([])
+            else:
+                multipliers_list.append(None)
         except Exception as e:
             logging.exception(e)
 
-
-    weaknesses_list = []
-    logging.info("We are fetching the weaknesses from the pokemon")
+    logging.info("We are fetching the weaknesses from the pokemon.")
     for pokemon in pokemons:
-        weaknesses = pokemon.get("weakness")
+        weaknesses = pokemon.get("weaknesses")
         try:
-            if weaknesses is not None:
-                weaknesses = []
-                if isinstance(weaknesses,list):
-                    for ele in weaknesses:
-                        weaknesses.append(ele)
-                    weaknesses_list.append(weaknesses)
-                else:
-                    ele_str = weaknesses.replace("[","").replace("]","").replace("'","")
-                    ele_list = ele_str.split(",")
-                    for ele in ele_list:
-                        weaknesses.append(ele)
-                    weaknesses_list.append(weaknesses)
+            weaknesses_ele = []  # To store ele in weaknesses.
+            if isinstance(weaknesses, list):  # checking type of weaknesses
+                for ele in weaknesses:
+                    weaknesses_ele.append(str(ele.replace(" ", "")))  # remove extra space
+                weaknesses_list.append(weaknesses)  # append list of ele in main list
+            elif isinstance(weaknesses, str):
+                ele_str = weaknesses.replace("[", "").replace("]", "").replace("'", "")
+                ele_list = ele_str.split(",")
+                for ele in ele_list:
+                    weaknesses_ele.append(ele)
+                weaknesses_list.append(weaknesses)
+            else:
+                weaknesses_list.append([])
         except Exception as e:
-            logging.exception(e)
+            raise e
 
-
-    next_evolutions_list = []
-    logging.info("We are fetching the next_evolutions from the pokemon")
+    logging.info("We are fetching the next_evolutions from the pokemon.")
     for pokemon in pokemons:
         next_evolutions = pokemon.get("next_evolution")
         try:
-            if next_evolutions is not None:
-                if isinstance(next_evolutions,list):
-                    next_evolutions_list.append(next_evolutions)
-                elif isinstance(next_evolutions,str):
-                    data = next_evolutions.replace("[","").replace("]","").replace('"','')
-                    next_evolutions = eval('[' + data + ']')
-                    next_evolutions_list.append(next_evolutions)
-                else:
-                    next_evolutions_list.append([])
+            if isinstance(next_evolutions, list):
+                next_evolutions_list.append(next_evolutions)
+            elif isinstance(next_evolutions, str):
+                data = next_evolutions.replace("[", "").replace("]", "").replace('"', '')
+                next_evolutions = eval('[' + data + ']')
+                next_evolutions_list.append(next_evolutions)
+            else:
+                next_evolutions_list.append(None)
         except Exception as e:
-            logging.info(e)
+            logging.exception(e)
 
-
-    prev_evolutions_list = []
-    logging.info("We are fetching the prev_evolutions from the pokemon")
+    logging.info("We are fetching the prev_evolutions from the pokemon.")
     for pokemon in pokemons:
         prev_evolutions = pokemon.get("prev_evolution")
         try:
-            if prev_evolutions is not None:
-                if isinstance(prev_evolutions,list):
-                    prev_evolutions_list.append(prev_evolutions)
-                elif isinstance(prev_evolutions,str):
-                    data = prev_evolutions.replace("[","").replace("]","").replace('"','')
-                    prev_evolutions = eval('[', + data + ']')
-                    prev_evolutions_list.append(prev_evolutions)
-                else:
-                    prev_evolutions_list.append([])
+            if isinstance(prev_evolutions, list):
+                prev_evolutions_list.append(prev_evolutions)
+            elif isinstance(prev_evolutions, str):
+                data = prev_evolutions.replace("[", "").replace("]", "").replace('"', '')
+                prev_evolutions = eval('[', + data + ']')
+                prev_evolutions_list.append(prev_evolutions)
+            else:
+                prev_evolutions_list.append(None)
         except Exception as e:
-            logging.info(e)
-
+            logging.exception(e)
 
     logging.info("Create a dictionary with the extracted attributes")
     pokemon_data = {
@@ -283,14 +267,14 @@ def process_data(data):
         "name": names_list,
         "img": imgs_list,
         "type": types_list,
-        "height": heights_list,
-        "weight": weights_list,
-        "candy": candies_list,
-        "candy_count": candy_counts_list,
+        "height": height_list,
+        "weight": weight_list,
+        "candy": candy_list,
+        "candy_count": candy_count_list,
         "egg": eggs_list,
         "spawn_chance": spawn_chances_list,
         "avg_spawns": avg_spawns_list,
-        "spawn_time": spawn_times_list,
+        "spawn_time": spawn_time_list,
         "multipliers": multipliers_list,
         "weaknesses": weaknesses_list,
         "next_evolution": next_evolutions_list,
